@@ -22,46 +22,124 @@ button[disabled]{opacity:.6;cursor:default}
 #msg{min-height:1.5em;margin:.7rem 0 0;font-size:.92rem;color:var(--bad)}
 #ipucu{margin:1rem 0 0;font-size:.85rem;border-top:1px solid var(--line);padding-top:.9rem}
 #bekle{color:var(--muted)}
+.ikinci{background:transparent;color:var(--accent);border:1px solid var(--line)}
+textarea{width:100%;font:.85rem/1.4 ui-monospace,Menlo,Consolas,monospace;padding:.6rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);resize:none;word-break:break-all}
+#tamam{color:var(--fg)}
 </style></head>
 <body>
 <p id="bekle">Açılıyor…</p>
 <main id="kilit" hidden>
 <h1>Soyut Cebir I</h1>
-<p>Bu uygulama dersin öğrencilerine açıktır. Devam etmek için size verilen şifreyi girin.</p>
+<p>Bu uygulama dersin öğrencilerine açıktır. Size verilen kullanıcı adı ve şifreyle girin.</p>
 <form id="f" autocomplete="off">
-<label for="s">Şifre</label>
+<label for="u">Kullanıcı adı</label>
+<input id="u" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
+<label for="s" style="margin-top:.8rem">Şifre</label>
 <input id="s" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" required>
 <button id="b" type="submit">Aç</button>
 <p id="msg" role="alert"></p>
 </form>
-<p id="ipucu">Şifre bu cihazda bir kez sorulur. Uygulamayı telefona kurmak için tarayıcı menüsünden "Ana ekrana ekle" seçeneğini kullanın. İlk açılıştan sonra internet olmadan da çalışır.</p>
+<p id="ipucu">Giriş bilgileri bu cihazda bir kez sorulur. Şifrenizi uygulamanın ana sayfasındaki "Şifremi değiştir" bağlantısıyla değiştirebilirsiniz. Uygulamayı telefona kurmak için tarayıcı menüsünden "Ana ekrana ekle" seçeneğini kullanın. İlk açılıştan sonra internet olmadan da çalışır.</p>
+</main>
+<main id="degis" hidden>
+<h1>Şifre değiştir</h1>
+<div id="dform">
+<p>Yeni şifreniz, hocanız size verilecek kodu ekleyip uygulamayı güncelledikten sonra bütün cihazlarda geçerli olur. O zamana kadar eski şifreniz geçer.</p>
+<form id="df" autocomplete="off">
+<label for="du">Kullanıcı adı</label>
+<input id="du" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" required>
+<label for="ds" style="margin-top:.8rem">Şu anki şifre</label>
+<input id="ds" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="current-password" required>
+<label for="dy" style="margin-top:.8rem">Yeni şifre (en az 8 karakter)</label>
+<input id="dy" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required>
+<label for="dt" style="margin-top:.8rem">Yeni şifre, tekrar</label>
+<input id="dt" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="new-password" required>
+<button id="db" type="submit">Kodu oluştur</button>
+<p id="dmsg" role="alert"></p>
+</form>
+</div>
+<div id="dsonuc" hidden>
+<p id="tamam">Aşağıdaki satırı olduğu gibi kopyalayıp hocanıza gönderin. Bu satır yeni şifreniz olmadan işe yaramaz, şifrenizi kimseye yazmayın.</p>
+<textarea id="kod" rows="4" readonly></textarea>
+<button id="kopya" type="button">Kopyala</button>
+</div>
+<button id="geri" class="ikinci" type="button">Uygulamaya dön</button>
 </main>
 <script>
 (function(){
-var K="sc1-anahtar",TUZ="mcjhYl1m2YiBK0f4M5rJzA==",TUR=600000,SURUM="lvl2jHl8oKDO";
+var K="sc1-giris",TUZ="mcjhYl1m2YiBK0f4M5rJzA==",TUR=600000,SURUM="Hfl6iZ6EVDbC",L={"060176488d49f4cf5ed2":["HmNCkB5C7HUFv+mxR9C6ALruc+x0zklz8LnnyVJhyNiAcnEix6iz9BlfWTIRSRoh2GBuEFEgpzsjIotE","EeJMqRGOkDLWApfzIQeuRtigJMRrGnzN6E58hqDMDZex9kcItR0jJdmyJ2dbSsGHmDtIrIfr6Rtuo1p/"],"e29a3c00e72a6dbcf446":["uZoS0nr0acM5MooHiSF6vPjOL4RSz241BQZFOEkY0GQTp77zc4DhlNH36yqbxoieRucMmC2oYTWCIUnT","xepas/5CZmg97tXr715wH+obuBQRXN5rw4jG5TLjKweD2vV970/56rrKex6iTHcNRkDgvRMAh7yEVrum"],"f3236539e79cb0e4ea4b":["K8HuYoRxdbS0Bq7n+lElKYIjGJ6sD/Tk+212WgtlIytWJqjF5KV2YEa8TwLWJgo4RwBDLTb5nv6UebX1","XHZ+f92HHyEukotLohCzNlacpKSY5QGpamSUD7eOA3SdtYQZkd19ADUFkH6IY6CZq+8YilKngy/0cwrk"],"c48f4db98225de72f877":["r443w18mW/i/AGtTjrEr2kyWvdJLCLzPqYK/JVAOECsA2WSl6WLl1UvGDzk2NTEFMYvhqbHzUWO/jESx","HlIgg3rnQ4+FhLQLSfVViF3ZHJymHgwavmlcJ/jwGTnXqreGMz/aEUBaFOyvlg4PeKH66qGK08g03nZA"],"bfb81501e04a83a3f871":["gnoJbBPN8l0ASZXagkFY74RkeFQgQep2T53o7CkU9E5egJcRGZBUgnvd82z+YRuxBGmCocJwoFjac7xK","CHn9PeKINqKvSsx0pczFz2/aP8rgqNQyM9giw0yM6BBu7z3p15ggM/hTe1b+4ZQDEKdiVJgAfomG3e9c"],"ae2fc42a1d88251be9e6":["QO2Gzezwt7co/3WSbp+LzJsdLZF7LpsGNLt35+dFyNrgzZJPgiBBuXF8MLcyOgMl6wOoCvdzYlG//MDe","r566XGcG8XwaoAwwFzP9zK3Pp8gFwxLa9ldE+7t7l8mlFwwax+gaaDseN2wcShi29lVsPbppibGA2R38"],"5fb2a3d91f9a75f5c752":["4ErVi1aLKZlX9tg3vYGK38kKqSkv5j3lmw3ANH+MUlGr/AuKt4UI7ZHMA7mT4RG+j7H39ntKI2GSfvl3","UWhvQ9dppd2DB0gKBAXJmKlDRrq7EnyEbxjwhP9ARMHtUemgE+R35QqWY1iSCHmLnH/ybg99or80FOq1"],"8b40577301b452ba9898":["e/QcBKRuKqfNlXj1UccCubeoYVyCn1NjLepXFccItL5cpaFc38lFRALvFppDb7ozULCgaBwWueorlcfA","dgInP29x3tVSDE+faA+B8D8AZLVJQIOY+c1Z1UfB16GnU9JSHdXZ0SDGEtP+aJfyhVyiL4WNSWYhEIaL"],"f37b670ef58a44f6e661":["dk+JEMUoYO/d+Rh0ckuzQzG+nPfyuCbGcDxVwbeAx4PCqrV2fIa8P4pdY/RWoGFR8Tr/hqVpduogU73J","b85NGWf3+3+wfFoX/0GBeMw5flI+wIKvkouqw88KCrxJLZYzj83V6ufMSS7U1OCwZz+oqpQSkIe20dmd"],"53cb219396aa2931f81d":["lU3J41Zx+NI/BXjXPhogkdSPHcTr8f9eGm/fEH3O2Rdz8QNvIzpHU8Ysh+Gkzee4Hr4xlCitlEuT13KQ","3/uLdyLj+7aeuJek5EuZKZAUYRSTswxkRlikN3nt9D5eo7MeSsO1O6fs3Dyc51Wxy6dBjtk8xO4wGdKp"],"4cf4d2a52104f57e4645":["O/HgaJu1yfqjiEwsSLxp60l7qNN9Qsl9EXFhTWtTqR0pBpInusvoLcCbN9UzCEywN4HD+NZ6P09OqSp7","sPGWEoWx69nnzV8+cRmRHDDvZsJnyY37NohFniKdbn40QbS6vgV+9x6thXeeWM/v9YzYe2w05EEMsX+f"],"a56230d516bbb6e203e2":["4W2iuy6uNIAZx8Y0XGtKpBNx6c5J7QEKkd3uM0y7FwywgxBS6uNz7K4kIdZDc6kHDOZ1Acmz/94pZ602","3aJb4nhEApbmuvzSZy0Vf1g6DN/EGC2kFfAQ4MVSUH7pWpepch/HEKrQglQEYkiSEKZL0brtXQAtGSGr"],"4052b8590e44445d6636":["uvLsyZ3bf8TW7Szszw3A7PGY1b9upNC5c3rTqhn4j82Y1jwgQVrxWn40/9BVIHkSKY646lUtE7AjIA8R","DlQ0Nzzm+yjcXvBE8Jr6j9bYMONSw7t0W2IvZb+n+uh8ynTbrj5QcFh7WBc2/v1uSUUgCIofJD6W+DGf"],"b43a4cccd6572cd0fb44":["dA7XnpwIzL0RyDxzihOo/19+JiFWTSvpBqnd49WLDoPs4LwV9qaSNRhidaj2B4BFRCp1MktpKbwhoNpj","4Kxdtr5nyrnaWt5vupc/E8o5DoC6wH/E8EC+hy2Uy9jQP1zMpgnLQkz5WLLiKE+hlPW9LwF6xyvM+KlQ"],"9f566665521a95f2ae8f":["+Iw1QoZH+dzMuTVR2zu7ai/TB4u1AWuzXZ8J3pZCVGocVSSnt/yr8M2g8WqPJm3gLHXZ6NVVO6QLopDq","pkBLg4Wsdszo4ZKXuSUEkb1YoOCZVNWGzWitBnakfA3t51kFOikS6rABySh5vLpbMoumYnaxV5XlRDK6"],"78899b9db3730907fd77":["PHAX1ioOKyPWCGEa1EmJCA2H2Sa3//Ao70BXdJ9GZYiXiypZwW1iAzNxD4yTYKQzhMka6caGnwBiooHG","BbnRyyR3JBMDLfeW7pETtJANhb/E7Qr5dxbY6L8LkjPD6Dg+pe7AR6HcFVPmt6USjko0KYp7pX/hMnt/"],"e7548392cf1ff656c761":["NOi3TuL5mor/gxiZpEazLcleSxFFJa+X4ifyBHT28sg6/9sQKSiRRJN6wLBv5W0AbhbIF70YUN6GGv8i","lwHgkOTrFb9IZwUIArYYHI4UR4C7YhmnNh9cGebWh1jhDMhdhR/1kgx0Y4O7kBrsmi77sQVCnLD/RpAc"],"4c2dd81ad9658f676838":["6Avl1RKjhCaICLZC+PecRpleyKF9+cThC58cF0uh0vd3BQc9CtxsoobRLb/fHQ0RUB8CRDnbCR5Ar0yU","EcdOaoBNJESMUW8d8i/qAg7VFpVqfnyPmyMsbFDcd1QJlHF+cr4SHcTQJV4nW6NVkIMrnLemdhFGFFl1"],"9a76357e3e5c160c5c80":["3BdxlVBvmeX/+VTWlXXoLARmMID5Jk5zJa6TXxfwG3u9/nOmA3+yvMGME7DTO3TtvXxPhJ8I7UDEPv7i","nV9301vgAYehyYw/hPzYQK4GSk8KgS0nJZjQaEN0ieabt3rh1D/JN3BDn4QfFSQws/cCVuwQ+38agnSk"],"10d8cb054f5904b17cb7":["Jj30CXVNVn6U4sEw/eKPT0VvqPAdrn92EHsvoFqZuYqBZX+s+icSYGMsFzCoUpzy7AUaRQB+wLVYhuGQ","8LXybBfxE+3rRz4v1cOcoK58vecl1cTaEcO8/VYsperavGqiNhEArrJg4vh93xdVsOioO4HPoe8bpgei"],"81b32213a5f7590be78b":["4jq/Ndmb4HR2DtRc2jv8lshyYSkx8nrHAVVUsceceKP0hSOQU0R381ZJhVA7CXKd3AFdrjt0ZUUAj6YO","/qk9XqPrbfEWoXiaC5pvp4Iq0ghxaIyzZbV//0STS9L8gx8piI8wd9BzQHhvnh90mR5ktisFTRHxY8te"],"6cc124410010ca5ab823":["IguOHdTKB4f1WZ/7ipnNwHuqm5LIJvHyye9XH7tsYgS81J0SPAb0vXSqyKUXM90BOWvwL//pAPx9TWr+","q5Y2UYYDCfqV7XOk22QTAKVj4rH5HqQsvIFHj76GlrjY+SZayfskPZVgfiX8B1NR+OCSIOFM4Bhtcr0E"],"dced69e28ae48f86cdbf":["fa38al1McYJryg1bcjrK40oQbwxGfFYaW77lzlg80WYko7vRsxtPX12yspzElKiLynK6Ea9Pss7DbFKC","lTqBAg6yRKiv4LX5dfnUQpUpLdS9wdlqAamvfL9QRKx/Xb9t2e5vVD8JfvFw9iucns1zw1F0WMxhtlr0"],"d42703a69b1bbd46eda1":["bOMrAFyrDeL//ptJU2DrwW65nmsBLMFLm2ytx+eLxg6JcHz431kJqWIa/iIB52Ualx/QnRTWYtW6oIZo","3b8UFqni1iYmtVeu/VaQEl7YUF+i62o/y42NzKh/J/Aeu5lYcwFtbXrvxRlsOxhLfiX7zMt816fCr1jh"],"9b51e4989313131c65cc":["eUnUf/hovOyMsEIwON2Snjc5C8aaeDym9Zd8/kzx2eGV/kOUdS1Uuz06T2hJFkpwLjeGeJ71OrUJSl97","AymHfRAURZYPxs21v3pc/ans8HVoCBBFkNT8qU7Xl3tT71NrpehuGZxSOnLKbCLBoKJdgE4G3QJe/PEc"],"a50ece756884cc8e2075":["r8Ivhf+DMtqIdVI91EFMW6i0DB6R21kO8kJmvnn08txQF94zkexLpESjs3I27vKI8NwX25RMCtgbIHJR","+HqhmB1xp4RBA6lho3iMk9fxmyECNdnsjP9+YoWs7kvh5A/8NzfAWq6pcyqzRjO0dxk+AcOUEt16QBRQ"],"7907a1656d084617ec98":["fTVXeRZJWclHiIDirJqzJ49FTLmegd5Fafo3QN4cjf0XypJEwJfwCtnFK8qk83ZC+j82Ji7KG/GR2+Iy","DhW1WitpZzbWYwcaU6X5S6n2zDz03O61q9lmLjoOMkHtaVk5tUFMMZik+Kblpfc3ykyrAEEW5qCorNPV"],"00704140931c13553dba":["0ngM0EPRC4oZM//bvT39EW/+9xxVugrSTulFq9SzbSUxTOsUVHg999bWrLDDA9B6o+Jiq4VkJNkzeZjx","hOTc4srCVMhLReT9iUbMIvM/qsf59omwsNkyb95H2VR0uurMigmCVlKlM6XXbnxlgGetHLLvTd2aLRRL"],"0c07450eefe152b3cd25":["0B5yS0pbZCsfgeAnHz7H3zLsUL4I37H0MCwofES11yepZhwqJgqAXOlPTRnqnQwVIW5y8nMIb2fGgAzB","+soZjvOSsOA43pbpJafpTy+lOKTvF8GyHfP1Wboov+JUgGpwRWZIoFkUgLbVRT6vtyWv/GtmL9emt1d4"],"263ac15c71fe04671eb9":["n+K3E5bInr3JOttCKPqyf7Va9XSdJvXG5JRRuzYC/OMH9lyjjAL/eT6NSBHXotIdn9qZpFHcLFJHh5LB","rvev0Y2oPMdASZd1KJ9Yrfzvx8/fJRvl8TX5tbRdn9BgcymktSqfJfUakl1SD7QkfEnN3ZGBfoHcmiMq"],"3c829e9bb85ed52a08d1":["3TTAQoMwxLf7I5zWi/5bzKQkZHwDwWifx8YLDps0Lhrgumrte5LYT9RENoFGkEkUR96LtU75n5CaxPKC","eCjZBtoVgNTRVkEc+ESFsN9PtCuynz4vXPHFwq0HMLV+nodN3bozZG9gUzFa2BVIGJsw9BlJF2PObxcd"],"468da4fad8efe7d32aee":["V8ya9hk6o6RxoAMTLIjlg2wBbF0LHgLVrP1OyHt4/ARxDVyBvlfgeVrrWuL19hsC6NZiuSWjp8c+le5n","b9oGU4OD1bxO7D4wXyW9c/GnEUDekj10g2t6uEoFRrsoM9vU2hqVB9WDuI8EVkODoYoJ2T71/t7Jj/Sv"],"37941891825aaa76f565":["CNDYvw4shJJ0IbdpW3czSdG9DzZCsWlV1Ydvfpvdobeb/xyahXfrGTa/8wGVIKvypOtjgKHbqpqucN7U","b1U+7iB4EygP0KPoqxZl3lBOmTrYKQqWAL+qrMUEtwi+XmV24pUSk8Nz7x1VW+WR1/fmigjXFqelJqxI"],"d22eb032df64cc3b9be6":["KK4W1lMXyeEu7KbFmP41w23p48IHX/KcdDgLc5XbuApCzzKuTJW08EAzgtfsdnMa/P9vgmcNOMgL+wPv","CInCwCCPHq9kdDvpfWiCyLvL56k/Gcz1KxjDLkI958Zl55/4V6fGkbZa2etCsp26iJcJcKXKW4iMVPo0"],"861b96c7b82efdaf86b5":["Zf00UnZlO+BleaMEs0/B8KwiWrIp/pyZfCNXIDm/7rqnw3l2SNyA3IA0alQTffjTzr1A1cGobxnZKEVk","fyH/QPHRyNFVLUC9B/LtxDXPmt2Jp4qCAaw/w7jICeQL7WBFAp0tKlNZiQosL1vyPGfrfeQmE3SXm/oy"],"36a57684e45f7ce01f36":["AaZl2IGutJseM2/tHQ84jk0y7Bb8Mn8cGPFbCTPeS0BoxXUO7BeQtBUKc5N6gBprwxqkb18OxFnm4/Su","+vrAG5mzQLvZXSMVZSFbnHuOs+yXGOFwVhuD349kBH6OP4IK0riHH/k5DOSsWvsUtOObmEJW/VihLBXa"],"11e5712d4e69747e35bc":["wWYyGxwj7qk9fqoxbmdpwWYyi4UcqPHSNMtix8u1ykSHwstqFliRtrBh9nhn1bpmlNLdbAc8eOCRqp9j","ekBWvyNS5Nz6+MXbsoCa0Q4Xqy5XiTtgmKNUzboecs/dKln6+jGcKUiwQa/DJKI64Jm8kDW54a5XfMoH"],"374459c3b57255c3f312":["JXIYwTLtoavvaLDUz1ju7TrDycSp54A5JYpDVWsEcYGkRPjEOGm/WCYY3l/9Td+//l20UuaYqRsd3F9v","foFPLcHj5zFG65wmldEyVNYDO6u2hh3u7C5G0oKaWCnE8AsBAfEoABndoy/shThICGrZ6DxevS2cwdm0"],"42c6f0b7df83c9677728":["XPFe7e9vyrlIWkdg2ZKekCAmRlQ92+AoYTtM1v3aXWDTvZjD4yQAPcBmiw2vq4jFvJvPowMTQ3pE/+DC","9XMIXsmd6U8Yi3fIYx+VgYW4hDUz1qV8UImiK3YPVTsBUp6eNUtEI2QQwYJXZHc4jDY7dZAyxOTRqNj2"],"422455226fd6621a246c":["tpl5hyCh4U05SfjENGuppttR7eIW8HlqwZTR+gL7I2CJ490fWQifV3Gnuo71Jpr2mKUSRdvCDPc+ezVe","8Of9dvfxORrh7hcJHPQiyYc8qIAysFljTJ3m5iJc1yMf2mWmfMzbx6FEvKWw6AZkvq2o3DyqqquXPOJh"],"e9ef07b99c43c768c3fa":["LLZzJ1xNjtfERvOTOExw4fQ/x/yUqsIDjBIsLuwlpKkCSeY8Nt7qwiV+2Aa5b2Oew0W/FluSWxokeT3M","FPNlOVqri3MSvKo3P059BQkGXIOuH3uWOauHk9ZK/5s+5qfx2GLD9wCRl+YU+4PXuKQkjd9rc2G+SlW7"],"3736ffee51dfa5b302f3":["2VKwpFhCxqZIgGLNF9seJLj7xmauN21b52vEPCvfzX/R4COx7ahSfXBk3iRlWRvt+NFG44OXrKLMFwGM","Wj9x1ROreAzfWUqr0MJUkHxzX6Ht2+Usi5u7lB6pAfIGwk3y3JvLuMH+g/JRVLybSStdFd0n1M7paPJN"],"02775e0cdf495588622a":["Z7S1A4HNHl7JhQmbGjCdK+vcR9zoXiiqupMOY3SG9w8p0XaPvwNSAXxsaXIKRD4fomN/U39fKoRo3TX2","sP1d40ymbjGlTF81Ekq2yn65jZfnYN75ThssJEoN2HINyjVgI/kZ2E6v5DAtTgN5eDhdlojJAvEYck7d"],"49f51154d6695523cf9d":["pKWPoENd5NchCTxg2aUwk9GOxQ/jBwEuP5EGICRO2HPZZZ48UJDLoUUvsblrzUZTvH7D6k56x/Of7QjK","KTJk/UAaxiYUx9gR6ZyuWlxUlexWUdQlPE3syuZIr4WF08drWoIFeYm2QLGjZoYbzDs97nN3tFaKy69b"],"89976921a1a70ec78645":["E7ERYxgGrqjHtb4an1Z39W2yPeWiE078bJPWPwQa1RuGweasTn1Vrpsd8gfOfkkQA3g6Qhn2I+Skehhv","9Pk0dL2nSwAuWrIKB1UJHz4aQaWVn6Qr9Co3UzQDQE02txSPdzxAN7Blrn2v5vdmIMa/HtgAq6aCwrUe"],"6c778e554e2f6f4875a0":["ySkFl9HsgSURAhz4XLdcu+SBoTGNR5FEXQjF2Kv68TfVj4H2DAXk/Wfx5A7ekPjaH1mYE9q7tZJW5v0f","B6cYpZ+jPMJb1IIssX/1hJRA63IN+sEDvdrumFkpi/sESzZi7bAM3RLNCN8Cu6elE8ip6d5R6DlCIis1"],"251d45445081804dc9fc":["yL7tPUU4sSiAy/u7tcihtaQss/aNTUKBc6VPYSHoxrpvEBdmBh7nBpAC5aFBEdJiVbYUy56pYDJC4NTW","taMt+lsTuint/6hV7m78A+heFlnkEgc0J+Xi+qDSDF1szf7ZMwQkTosib9ci75htn2/pZwDKhHUEbg2v"],"bb6046cccd4e7643a8b8":["vW3Zu0inETUFpO4+JfmfpwS7X/qNpDmWKfUKT0li3WV0FqhoKzn68lhSvtBcUrLDABhQU6eUQc9S63L3","7ywB5HCG/V4B2os+j29FQSjbRtW9qKi/VsOPBmQ2dV27x94v3FQPd84Eu7/6BZqTyUlq2oBnFXN2Ap5X"],"44b7019e7faf6a97e91d":["npmabsza4teBwwTHY03ozIV6Szkl727VOJtU/t7ZBQ+WoXdW7PeqbTTGWhBM/IevahZktmhbDWE0mtYX","whCqd5K0tt2ZYkqxNFFn0fmqi6DMeUntp5q8YLTnyXqJvmslgg7RhpClb5Bhl7AzGJW+paea0IgFpaEf"],"21b289eb6b40bb2b6ac2":["wJqf78qc1uTjipTqDaMkgkUo5uiGNt6NprNfKYQ1Kznj+ftGCJQL/fthPOQyl80xCCy0GmCl1cv5Q6N4","L87UpkQnxbcWUrDywQ6r4YkO2Tgm4ldkk7y/CNQFHo/BMt/tstD9TcqJJfxWPKkQqn4/Fnu2GPkjy5Uv"],"de0232ac5b266b5ad1f8":["C/g1aOzOe0ggdWCLICz72ofVR05fL5HRAMiSuTG/CNKrjRgdmJQPXJr8sr3faIuRSPPLJtgoW5a37J2e","7rzBW7bgQLAdgP1E+N1UrlZB5JYZkLZP6i7lGBkUK0geCKXSngFlSEix5yHViGhGgxqXIjVDiShZgtJA"],"995404c9c321dab29d1d":["X/o2sEqrqxkvtibdi4UeJyR5MuyXqt8kSMvFfp/xOQh7r8tTK+LV9PIfSYvh+UDUnrjoaFDmXjdDO9OU","i4+XA9fJWXb5YT29RM+0JpyytbaQ6T3qP/AIoAgRUvB9J3qBpkWpTnyHYXg+dCfiEbQd5t3KFVfM3Akd"],"d2e91299066df2374173":["JrCz+5OgLv340pOnue9jRqlQXdv5ya2DZC4p5OXEQRmexa5xLOxf0HGyA7Jm6jnmEBIJYuXZiI7fL/ZR","74VOZIaXxP0DgYpXxt38JLqX9X1B+Bo7nI0r2v36DO4b1B19H3EGib2OEIT6sKjupjswuUhe/TcddtbJ"],"df12f0479130b7d25491":["dlA5emhKjiA3If0iCVY1o8KZ8CxKsRSlDKa4493mGvU+5HSYREOz0NDh6XK64AZIDM9whtaV4DhLjXeP","gTeIgAop432VB7/ke1XUIRtdZwJ63ZsdrUI0lcp4Ex51be7QhDrPWcDwIWG/xEM69l5EJEWgCYKppgqK"],"0cb77839e3e5ff6efa3a":["4JMj1BJaZfG+0FJkmtI/Rwf7bzJflMkQTTIjeQqlDwZU2FfEPRnCGKm6LsN4FHdcIHv2LCLrA04FzOwC","K2ev1mY2zYaKMdPJ0fZ6YbfOyLlq35DZHJFiLRYhstwEkUHpT4XMQT48lXJKQUWkGjDVDQRdkh3PGwVN"],"b373c601df48251f0aac":["uPSKH3AdF5SDyGpO5jeB5Rl1wPNNTI+Y31Vne5gahyXyMSTh58vyr+Tc+4nCaj0CWFbdvKFUH6veNR6z","x79SEMkq+SSQ8WMNNcNpWt0wxbVNWOh6pzt3OBPzT6DHl1lh1ZtjY5524PWM/NFYInvNEHPaicXkhm2b"],"549e2d4a2b7e142803ef":["WkolvU5SQ5ui2zs9oCQK397SjeUBPAy7IoiqDAdt9DtNyGaKt4c7goXv3gp/r+Hb4UWEEfUiXbOefyra","V3qGwmhuzeywzFZFJNkN1Z3cyGvZAD6iRytqsMPYYNQ0c57B8vTvdZodOGANkkA9g/3pyIZaPgbEA8QA"],"6f99e8ddc5b549b11b06":["+m/XDHr75qkfDtFNHdSYK1kTd/4RaCG8J/rIfhzwuM048Ky7H0uOIobBlXrcHdO/1iX34hdtba1cXf06","QSYNRtNyPoepJ8iVdWugblPhMqMmzlR1C9p3vBDltZvTrp1FS+vjbK2pIWQL6Joqjzz79hOdd1ZVe1UK"]};
+try{localStorage.removeItem("sc1-anahtar")}catch(e){}
 var $=function(i){return document.getElementById(i)},S=window.crypto&&window.crypto.subtle;
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(function(){});
 function bin(s){var b=atob(s),u=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
 function str(u){var s="",i;for(i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
-function lsGet(){try{return localStorage.getItem(K)}catch(e){return null}}
-function lsSet(v){try{v==null?localStorage.removeItem(K):localStorage.setItem(K,v)}catch(e){}}
-var veri=null;
+function lsGet(){try{var v=JSON.parse(localStorage.getItem(K));return v&&v.u&&v.k?v:null}catch(e){return null}}
+function lsSet(v){try{v==null?localStorage.removeItem(K):localStorage.setItem(K,JSON.stringify(v))}catch(e){}}
+var veri=null,enc=function(s){return new TextEncoder().encode(s)};
+function birles(){var n=0,i,u,o=0;for(i=0;i<arguments.length;i++)n+=arguments[i].length;u=new Uint8Array(n);for(i=0;i<arguments.length;i++){u.set(arguments[i],o);o+=arguments[i].length}return u}
+function hex(b){var u=new Uint8Array(b),s="",i;for(i=0;i<u.length;i++)s+=(u[i]<16?"0":"")+u[i].toString(16);return s}
+function kimlik(ad){return S.digest("SHA-256",birles(bin(TUZ),enc("|"+ad))).then(function(h){return hex(h).slice(0,20)})}
 function getir(){return veri?Promise.resolve(veri):fetch("icerik.bin").then(function(r){if(!r.ok)throw new Error("ag");return r.arrayBuffer()}).then(function(a){veri=new Uint8Array(a);return veri})}
-function coz(raw){return getir().then(function(d){return S.importKey("raw",raw,"AES-GCM",false,["decrypt"]).then(function(k){return S.decrypt({name:"AES-GCM",iv:d.subarray(0,12)},k,d.subarray(12))})}).then(function(p){return new TextDecoder().decode(p)})}
-function turet(pw){return S.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveBits"]).then(function(k){return S.deriveBits({name:"PBKDF2",salt:bin(TUZ),iterations:TUR,hash:"SHA-256"},k,256)}).then(function(b){return new Uint8Array(b)})}
+function turet(ad,pw){return S.importKey("raw",enc(pw),"PBKDF2",false,["deriveBits"]).then(function(k){return S.deriveBits({name:"PBKDF2",salt:birles(bin(TUZ),enc("|"+ad)),iterations:TUR,hash:"SHA-256"},k,256)}).then(function(b){return new Uint8Array(b)})}
+function ac2(anahtar,w){return S.importKey("raw",anahtar,"AES-GCM",false,["decrypt"]).then(function(k){return S.decrypt({name:"AES-GCM",iv:w.subarray(0,12)},k,w.subarray(12))}).then(function(b){return new Uint8Array(b)})}
+// Ara anahtarı açar: {a, id} ya da {yok:true} ya da {yanlis:true}.
+function araAc(ad,raw){return kimlik(ad).then(function(id){
+  if(!L.hasOwnProperty(id))return {yok:true};
+  return ac2(raw,bin(L[id][0])).then(function(a){return {a:a,id:id}},function(){return {yanlis:true}})})}
+// Sonuç: {html} ya da {yok:true} ya da {yanlis:true}. Ağ hatası reddedilir.
+function coz(ad,raw){return araAc(ad,raw).then(function(r){if(!r.a)return r;
+  return ac2(r.a,bin(L[r.id][1])).then(function(ic){return getir().then(function(d){return ac2(ic,d)})}).then(function(p){return {html:new TextDecoder().decode(p)}})})}
 function ac(html){document.open();document.write(html);document.close()}
-function kilit(m){$("bekle").hidden=true;$("kilit").hidden=false;$("msg").textContent=m||"";$("b").disabled=false;$("b").textContent="Aç";try{$("s").focus()}catch(e){}}
+function kilit(m){$("bekle").hidden=true;$("degis").hidden=true;$("kilit").hidden=false;$("msg").textContent=m||"";$("b").disabled=false;$("b").textContent="Aç";try{($("u").value?$("s"):$("u")).focus()}catch(e){}}
 function agHata(){return "İçerik indirilemedi. İnternete bağlıyken bir kez açın."}
+function temiz(v){v=v.trim();return v.normalize?v.normalize("NFC"):v}
 if(!S){kilit("Bu tarayıcı uygulamayı açamıyor. Güncel bir tarayıcıyla ve https adresiyle deneyin.");$("b").disabled=true;return}
 $("f").addEventListener("submit",function(e){
-  e.preventDefault();var pw=$("s").value.trim();if(pw.normalize)pw=pw.normalize("NFC");if(!pw)return;
+  e.preventDefault();var ad=$("u").value.trim().toLowerCase(),pw=temiz($("s").value);if(!ad||!pw)return;
   $("b").disabled=true;$("b").textContent="Açılıyor…";$("msg").textContent="";
-  getir().then(function(){return turet(pw)}).then(function(raw){return coz(raw).then(function(h){lsSet(str(raw));ac(h)},function(){kilit("Şifre yanlış.");$("s").select()})},function(){kilit(agHata())});
+  turet(ad,pw).then(function(raw){return coz(ad,raw).then(function(r){
+    if(r.html){lsSet({u:ad,k:str(raw)});ac(r.html)}else{kilit("Kullanıcı adı ya da şifre yanlış.");$("s").select()}
+  })}).catch(function(){kilit(agHata())});
 });
-var kayit=lsGet();
-if(kayit){var raw;try{raw=bin(kayit)}catch(e){raw=null}
-  if(!raw)kilit();else getir().then(function(){return coz(raw).then(ac,function(){lsSet(null);kilit("Şifre değişti. Yeni şifreyi girin.")})},function(){kilit(agHata())})}
-else kilit();
+// Şifre değiştirme: ara anahtarı şu anki şifreyle açar, yeni şifreyle sarar, hocaya gidecek kodu gösterir.
+function b64u(u){return str(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function sar(anahtar,veri){var i=crypto.getRandomValues(new Uint8Array(12));return S.importKey("raw",anahtar,"AES-GCM",false,["encrypt"]).then(function(k){return S.encrypt({name:"AES-GCM",iv:i},k,veri)}).then(function(c){return birles(i,new Uint8Array(c))})}
+function dmsg(m){$("dmsg").textContent=m;$("db").disabled=false;$("db").textContent="Kodu oluştur"}
+$("df").addEventListener("submit",function(e){
+  e.preventDefault();var ad=$("du").value.trim().toLowerCase(),pw=temiz($("ds").value),yeni=temiz($("dy").value),tk=temiz($("dt").value);
+  if(!ad||!pw||!yeni)return;
+  if(yeni.length<8)return dmsg("Yeni şifre en az 8 karakter olmalı.");
+  if(/^kod-/i.test(yeni))return dmsg("Yeni şifre KOD- ile başlayamaz.");
+  if(yeni!==tk)return dmsg("Yeni şifre ile tekrarı aynı değil.");
+  if(yeni===pw)return dmsg("Yeni şifre eskisiyle aynı.");
+  $("db").disabled=true;$("db").textContent="Hazırlanıyor…";$("dmsg").textContent="";
+  var eski,ykey;
+  turet(ad,pw).then(function(raw){eski=raw;return araAc(ad,raw)}).then(function(r){
+    if(!r.a)return dmsg("Kullanıcı adı ya da şu anki şifre yanlış.");
+    return turet(ad,yeni).then(function(y){ykey=y;return Promise.all([sar(y,r.a),S.digest("SHA-256",birles(r.a,enc("|kod|"+ad)))])}).then(function(x){
+      var kod=ad+" KOD-"+b64u(birles(new Uint8Array(x[1]).subarray(0,6),x[0]));
+      var v=lsGet();lsSet({u:ad,k:v&&v.u===ad?v.k:str(eski),y:str(ykey)});
+      $("kod").value=kod;$("dform").hidden=true;$("dsonuc").hidden=false;
+    });
+  }).catch(function(){dmsg("Bir sorun çıktı. Sayfayı yenileyip yeniden deneyin.")});
+});
+$("kopya").addEventListener("click",function(){var t=$("kod");t.select();
+  function ok(){$("kopya").textContent="Kopyalandı"}
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(ok,function(){try{document.execCommand("copy");ok()}catch(e){}});else{try{document.execCommand("copy");ok()}catch(e){}}});
+$("geri").addEventListener("click",function(){location.href="./"});
+var kayit=lsGet(),raw=null;
+if(/[?&]sifre(=|&|$)/.test(location.search)){$("bekle").hidden=true;$("degis").hidden=false;if(kayit)$("du").value=kayit.u;try{($("du").value?$("ds"):$("du")).focus()}catch(e){}return}
+if(kayit){try{raw=bin(kayit.k)}catch(e){raw=null}}
+if(!raw)kilit();
+else coz(kayit.u,raw).then(function(r){
+  if(r.html)return ac(r.html);
+  // Şifre değişti mi: bu cihazda bekleyen yeni anahtar varsa onu dene.
+  if(r.yanlis&&kayit.y)return coz(kayit.u,bin(kayit.y)).then(function(r2){
+    if(r2.html){lsSet({u:kayit.u,k:kayit.y});return ac(r2.html)}
+    lsSet(null);$("u").value=kayit.u;kilit("Şifreniz değişti. Yeni şifreyle girin.")});
+  lsSet(null);$("u").value=kayit.u;
+  kilit(r.yok?"Bu kullanıcı adının erişimi kapalı. Dersin hocasıyla görüşün.":"Şifreniz değişti. Yeni şifreyle girin.");
+}).catch(function(){kilit(agHata())});
 })();
 </script>
 </body></html>
