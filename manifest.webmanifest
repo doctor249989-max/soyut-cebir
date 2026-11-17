@@ -1,0 +1,33 @@
+{
+ "name": "Soyut Cebir I",
+ "short_name": "Soyut Cebir",
+ "description": "Soyut Cebir I: tanımlar, teoremler, çözümlü problemler, ispat kurma ve mini quiz.",
+ "lang": "tr",
+ "dir": "ltr",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#f1f4f7",
+ "theme_color": "#1d4f8f",
+ "icons": [
+  {
+   "src": "ikon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "ikon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "ikon-maske-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
