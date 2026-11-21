@@ -1,5 +1,5 @@
 // Soyut Cebir I: internetsiz çalışma. Önce önbellekten yanıt verir, arkada yenisini indirir. Güncelleme bir sonraki açılışta görünür.
-// Sürüm: k2AzKBrpTxmd
+// Sürüm: 6ae5SOkCeRMo
 const C="sc1-onbellek-1",F=["./","icerik.bin","manifest.webmanifest","ikon-192.png","ikon-512.png","ikon-maske-512.png","ikon-180.png"];
 const KOK=new URL("./",self.location).href;
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F.map(u=>new Request(u,{cache:"reload"})))).then(()=>self.skipWaiting()))});
