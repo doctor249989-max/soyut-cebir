@@ -1,6 +1,6 @@
 // Soyut Cebir I: anında güncelleme ve internetsiz çalışma (network-first, sürümlü önbellek).
-// Sürüm: xogHps25ybkZ
-const C="sc1-onbellek-xogHps25ybkZ",F=["./","icerik.bin","manifest.webmanifest","ikon-192.png","ikon-512.png","ikon-maske-512.png","ikon-180.png"];
+// Sürüm: MeC8scczXiNl
+const C="sc1-onbellek-MeC8scczXiNl",F=["./","icerik.bin","manifest.webmanifest","ikon-192.png","ikon-512.png","ikon-maske-512.png","ikon-180.png"];
 const KOK=new URL("./",self.location).href;
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F.map(u=>new Request(u,{cache:"reload"})))).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith("sc1-")&&k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
